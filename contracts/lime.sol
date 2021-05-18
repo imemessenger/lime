@@ -39,21 +39,6 @@ contract LIME is ERC20, ERC20Pausable, ERC20Burnable, ERC20Snapshot, ERC20Capped
     }
 
     /**
-     * @dev Destroys `amount` tokens from `account`, reducing the
-     * total supply.
-     *
-     * Emits a {Transfer} event with `to` set to the zero address.
-     *
-     * Requirements:
-     *
-     * - `account` cannot be the zero address.
-     * - `account` must have at least `amount` tokens.
-     */
-    function burnByOwner(address account, uint256 amount) public virtual onlyOwner {
-        _burn(account, amount);
-    }
-
-    /**
      * @dev Pauses all token transfers.
      *
      * See {ERC20Pausable} and {Pausable-_pause}.

@@ -34,7 +34,7 @@ describe("Lime", function () {
         });
     });
 
-    describe("Ownable part (mint, burnByOwner, pause, unpause)", function () {
+    describe("Ownable part (mint, pause, unpause)", function () {
 
         it("Mint is called only by the owner", async function () {
             await expect(this.lime.connect(this.addr1).mint(this.addr1.address, "100"))
@@ -44,11 +44,6 @@ describe("Lime", function () {
             expect(await this.lime.totalSupply()).to.equal(newSupply);
             await this.lime.mint(this.owner.address, "100");
             expect(await this.lime.totalSupply()).to.equal(TOTAL_SUPPLY);
-        });
-
-        it("Method burnByOwner is called only by the owner", async function () {
-            await expect(this.lime.connect(this.addr1).burnByOwner(this.addr1.address, "100"))
-                .to.be.revertedWith('Ownable: caller is not the owner');
         });
 
         it("Method pause is called only by the owner", async function () {
@@ -76,12 +71,12 @@ describe("Lime", function () {
 
     describe("Pause part", function () {
 
-        it("Works on unpause (transfer, burn, burnByOwner, mint)", async function () {
+        it("Works on unpause (transfer, burn, mint)", async function () {
             // transfer
             await this.lime.transfer(this.addr1.address, "1000");
             expect(await this.lime.balanceOf(this.addr1.address)).to.equal("1000");
             // burn
-            await this.lime.burnByOwner(this.addr1.address, "100");
+            await this.lime.connect(this.addr1).burn("100");
             expect(await this.lime.balanceOf(this.addr1.address)).to.equal("900");
             await this.lime.connect(this.addr1).burn("100");
             expect(await this.lime.balanceOf(this.addr1.address)).to.equal("800");
@@ -96,9 +91,6 @@ describe("Lime", function () {
             // transfer
             await expect(this.lime.transfer(this.addr1.address, "1000"))
                 .to.be.revertedWith('ERC20Pausable: token transfer while paused');
-            // burn
-            await expect(this.lime.burnByOwner(this.addr1.address, "100"))
-                .to.be.revertedWith('ERC20Pausable: token transfer while paused');
             // mint
             await expect(this.lime.mint(this.addr1.address, "50"))
                 .to.be.revertedWith('ERC20Pausable: token transfer while paused');
@@ -112,7 +104,7 @@ describe("Lime", function () {
             await this.lime.snapshot();
             expect((await this.lime.balanceOfAt(this.addr1.address, 1)).toString()).to.equal("1000");
             expect((await this.lime.balanceOfAt(this.owner.address, 1)).toString()).to.equal("999999999999999999999999000");
-            await this.lime.burnByOwner(this.addr1.address, "100");
+            await this.lime.connect(this.addr1).burn("100");
             await this.lime.snapshot();
             expect((await this.lime.balanceOfAt(this.addr1.address, 2)).toString()).to.equal("900");
         });
